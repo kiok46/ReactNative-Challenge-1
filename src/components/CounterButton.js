@@ -6,6 +6,7 @@ import {
     Animated,
     TouchableWithoutFeedback
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 
 class CounterButton extends Component{
@@ -14,10 +15,7 @@ class CounterButton extends Component{
         open: 0,
         counter: 1,
         animation: new Animated.Value(0),
-    }
-
-    increaseCount = () => {
-        this.setState({counter: this.state.counter+1})
+        tapAnimation: new Animated.Value(0)
     }
 
     startCounterAnimation = () => {
@@ -38,10 +36,23 @@ class CounterButton extends Component{
         }).start(() => this.setState({open: 0}))
     }
 
+    animateQuanitityChange = () => {
+        Animated.timing(this.state.tapAnimation, {
+            toValue: 1,
+            duration: 500
+        }).start(() => this.state.tapAnimation.setValue(0))
+    }
+
+    increaseCount = () => {
+        this.setState({counter: this.state.counter+1})
+        this.animateQuanitityChange()
+    }
+
     decreaseCount = () => {
         const {counter} = this.state;
         if (counter>1){
             this.setState({counter: this.state.counter-1})
+            this.animateQuanitityChange()
         } else{
             return
         }
@@ -115,19 +126,32 @@ class CounterButton extends Component{
             ]
         }
 
+        const textChangeScale = this.state.tapAnimation.interpolate({
+            inputRange: [0, .2, .8, 1],
+            outputRange: [1, .8, 1.25, 1]
+        })
+
+        const textChangeStyle = {
+            transform: [
+                {
+                    scale: textChangeScale
+                }
+            ]
+        }
+
         return(
             <View style={{flexDirection: 'row'}}>
                 <Animated.View style={[styles.counterDisplayStyle, counterDisplayTransformStyle]}>
-                    <Text style={styles.quantityTextStyle}>{this.state.counter}</Text>
+                    <Animated.Text style={[styles.quantityTextStyle, textChangeStyle]}>{this.state.counter}</Animated.Text>
                 </Animated.View>
                 <TouchableWithoutFeedback onPress={this.decreaseCount}>
                     <Animated.View style={[styles.counterDefaultStyle, styles.counterDecrementStyle, decrementBoxTransformStyle]}>
-                        <Text style={[styles.textStyle, {color: 'rgb(130, 130, 130)'}]}>-</Text>                        
+                        <Ionicons name="md-remove" size={32} color="rgb(130, 130, 130)" />
                     </Animated.View>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback onPress={this.startCounterAnimation}>
                     <Animated.View style={[styles.counterDefaultStyle, styles.counterIncrementStyle, incrementBoxTransformStyle]}>
-                        <Text style={[styles.textStyle, ]}>+</Text>
+                        <Ionicons name="md-add" size={32} color="white" />
                     </Animated.View>
                 </TouchableWithoutFeedback>
             </View>
@@ -144,7 +168,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         shadowOpacity: .3,
         shadowOffset: {x: 0, y: 2},
-        shadowColor: 'black'
+        shadowColor: 'black',
+        paddingTop: 4
     },
     counterIncrementStyle: {
         backgroundColor: 'rgb(49, 186, 201)',
@@ -163,12 +188,6 @@ const styles = StyleSheet.create({
         height: 60,
         alignItems: 'center',
         justifyContent: 'center'
-    },
-    textStyle: {
-        fontSize: 34,
-        textAlign: 'auto',
-        opacity: 1,
-        color: 'white',
     },
     quantityTextStyle: {
         fontSize: 28,
