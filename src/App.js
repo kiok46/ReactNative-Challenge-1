@@ -18,13 +18,13 @@ class CounterCard extends Component{
         return(
             <View style={[styles.card, {width: width - 40}]}>
                 <View style={[styles.defaultHeading, styles.mainHeadingStyle]}>
-                    <GreyBar width={"90%"} height={30}/>
+                    <GreyBar width={"95%"} height={30}/>
                 </View>
                 <View style={[styles.defaultHeading, styles.subHeadingStyle]}>
                     <GreyBar width={"30%"} height={15}/>
                     <GreyBar width={"20%"} height={15}/>
                 </View>
-                <View style={[styles.defaultHeading, styles.mainHeadingStyle]}>
+                <View style={[styles.defaultHeading, styles.mainHeadingStyle, {justifyContent: 'space-around',}]}>
                     <PriceTag/>
                     <CounterButton/>
                 </View>
